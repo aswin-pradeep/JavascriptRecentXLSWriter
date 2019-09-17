@@ -1,0 +1,73 @@
+<html>
+<body>
+    <script>
+        function addEntryToXls() {
+
+            var FileObject, directory, max, maxfile;
+
+            //change directory here
+            Directory = "C:\Users\USER\Downloads\SamplePath";
+			var ValueToInsert = document.getElementById("val");
+			FileObject = new ActiveXObject("Scripting.FileSystemObject");
+            var Folder = FileObject.GetFolder(Directory);
+            var FileCollection = Folder.Files;
+            var SplitFileName, Files = new Array();
+            var i = 0;
+            var TempFileObject;
+
+            //To read and store file objects in a array
+            for (var EnnumObject = new Enumerator(FileCollection); !EnnumObject.atEnd(); EnnumObject.moveNext()) {
+                TempFileObject = EnnumObject.item();
+                SplitFileName = TempFileObject.name.split(".");
+                if (SplitFileName[1] == "xlsx") {
+                    Files[i] = EnnumObject.item();
+                    i++;
+                }
+            }
+
+            var Dates = new Array();
+            for (i = 0; i < Files.length; i++) {
+                Dates[i] = Files[i].DateCreated;
+            }
+
+            //Initialize 1st Date as the maximum one
+            max = Dates[0];
+            maxfile = Files[0];
+            //Find which is most recent
+            for (i = 0; i < Dates.length; i++) {
+
+                if (Dates[i] > max) {
+                    max = Dates[i];
+                    maxfile = Files[i];
+                }
+            }
+
+            alert("The most recent file is " + maxfile);
+
+            // Declare the variables
+            var Excel, Book;
+            Excel = new ActiveXObject("Excel.Application");
+            // Create the Excel application object.
+            Excel.Visible = true;
+			// Make Excel invisible.
+            var file = Excel.Workbooks.Open(maxfile);
+            var ws = file.Worksheets;
+            newsheet = ws.Add(null, ws(ws.Count));
+			//Adds worksheet
+            file.ActiveSheet.Cells(1, 1).Value = ValueToInsert.value;
+			//sets input value to worksheet
+            Excel.ActiveWorkbook.Save();
+			//Autosave workbook
+            Excel.Quit(); 
+			// Close Excel with the Quit method on the Application object.
+
+        }
+    </script>
+    <form id="frm1">
+        Enter Text:
+        <input type="text" id="val" name="val" required>
+        <br>
+        <input type="submit" value="Submit" onclick="addEntryToXls()">
+    </form>
+</body>
+</html>
